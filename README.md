@@ -179,12 +179,10 @@ void checkResult(float *hostRef, float *gpuRef, const int N)
     else
         printf("Arrays do not match.\n\n");
 }
-
 // grid 2D block 2D
-__global__ void sumMatrixOnGPU2D(float *MatA, float *MatB, float *MatC, int nx,
-                                 int ny)
+__global__ void sumMatrixOnGPU2D(float *A, float *B, float *C, int NX, int NY)
 {
-     unsigned int ix = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned int ix = blockIdx.x * blockDim.x + threadIdx.x;
     unsigned int iy = blockIdx.y * blockDim.y + threadIdx.y;
     unsigned int idx = iy * NX + ix;
 
@@ -192,14 +190,10 @@ __global__ void sumMatrixOnGPU2D(float *MatA, float *MatB, float *MatC, int nx,
     {
         C[idx] = A[idx] + B[idx];
     }
-
-
-
-
-
-
-
 }
+
+
+
 
 int main(int argc, char **argv)
 {
@@ -254,8 +248,8 @@ int main(int argc, char **argv)
     CHECK(cudaMemcpy(d_MatB, h_B, nBytes, cudaMemcpyHostToDevice));
 
     // invoke kernel at host side
-    int dimx = 16;
-    int dimy = 16;
+    int dimx = 32;
+    int dimy = 32;
     dim3 block(dimx, dimy);
     dim3 grid((nx + block.x - 1) / block.x, (ny + block.y - 1) / block.y);
 
@@ -290,11 +284,20 @@ int main(int argc, char **argv)
     CHECK(cudaDeviceReset());
 
     return (0);
+
 }
 ```
 
 ## OUTPUT:
-![Screenshot (174)](https://github.com/SaiPraneeth04/PCA-EXP-2-MATRIX-SUMMATION-USING-2D-GRIDS-AND-2D-BLOCKS-AY-23-24/assets/119390353/a84a0c5d-39c1-400f-8378-101951174b17)
+On Float data:
+
+![On float](https://github.com/SaiPraneeth04/PCA-EXP-2-MATRIX-SUMMATION-USING-2D-GRIDS-AND-2D-BLOCKS-AY-23-24/assets/119390353/5b8b248a-aedd-46b6-b446-d1748e1ca3aa)
+
+
+On Int data:
+
+![int](https://github.com/SaiPraneeth04/PCA-EXP-2-MATRIX-SUMMATION-USING-2D-GRIDS-AND-2D-BLOCKS-AY-23-24/assets/119390353/5b83240c-424a-44a3-ab1a-1aaf7e3228e1)
+
 
 
 ## RESULT:
